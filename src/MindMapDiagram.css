@@ -1,0 +1,483 @@
+@import '../node_modules/@syncfusion/ej2-base/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-buttons/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-popups/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-inputs/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-lists/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-navigations/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-react-diagrams/styles/material.css';
+
+.diagram-container {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sample-data-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 2000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.banner-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.banner-text {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.legend {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  gap: 15px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+/* Generic Level Colors */
+.legend-color.l1 {
+  background-color: #000000; /* Black */
+}
+
+.legend-color.l2 {
+  background-color: #527a8e; /* Blue */
+}
+
+.legend-color.l3 {
+  background-color: #b60000; /* Red */
+}
+
+/* Legacy card type colors (for backward compatibility) */
+.legend-color.epic {
+  background-color: #000000; /* Black */
+}
+
+.legend-color.feature {
+  background-color: #527a8e; /* Blue */
+}
+
+.legend-color.story {
+  background-color: #b60000; /* Red */
+}
+
+.legend-color.task {
+  background-color: #10b981; /* Green */
+}
+
+.legend-color.bug {
+  background-color: #f59e0b; /* Orange */
+}
+
+/* Custom color class for AgilePlace card colors */
+/* Color will be set via inline style for .legend-color.custom-color */
+
+.legend-item span {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Custom text wrapping for diagram nodes */
+.diagram-container .e-diagram .e-diagram-text {
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+}
+
+/* Additional text wrapping styles */
+.diagram-container .e-diagram .e-annotation {
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+  text-align: center !important;
+  line-height: 1.2 !important;
+}
+
+/* Pan and Zoom Controls Styling */
+.diagram-container .e-diagram .e-zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.diagram-container .e-diagram .e-zoom-controls .e-zoom-in,
+.diagram-container .e-diagram .e-zoom-controls .e-zoom-out,
+.diagram-container .e-diagram .e-zoom-controls .e-zoom-reset {
+  background: #2e313a;
+  border: 1px solid #2e313a;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 2px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.diagram-container .e-diagram .e-zoom-controls .e-zoom-in:hover,
+.diagram-container .e-diagram .e-zoom-controls .e-zoom-out:hover,
+.diagram-container .e-diagram .e-zoom-controls .e-zoom-reset:hover {
+  background: #1a1d24;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom zoom controls container */
+.zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.zoom-button {
+  background: #2e313a;
+  border: 1px solid #2e313a;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  transition: all 0.2s ease;
+  min-width: 50px;
+  text-align: center;
+}
+
+.zoom-button:hover {
+  background: #1a1d24;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.zoom-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Make diagram nodes appear clickable - Enhanced with higher specificity */
+.diagram-container .e-diagram .e-node {
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  pointer-events: auto !important;
+}
+
+/* Override any drag-related cursor styles */
+.diagram-container .e-diagram .e-node.e-drag-over,
+.diagram-container .e-diagram .e-node.e-drag-hover,
+.diagram-container .e-diagram .e-node.e-selected {
+  cursor: pointer !important;
+}
+
+.diagram-container .e-diagram .e-node:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  cursor: pointer !important;
+}
+
+/* Ensure text remains readable on hover */
+.diagram-container .e-diagram .e-node:hover .e-annotation {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  cursor: pointer !important;
+}
+
+/* Additional cursor pointer styles for better coverage */
+.diagram-container .e-diagram .e-node * {
+  cursor: pointer !important;
+}
+
+.diagram-container .e-diagram .e-node .e-annotation {
+  cursor: pointer !important;
+}
+
+.diagram-container .e-diagram .e-node .e-diagram-text {
+  cursor: pointer !important;
+}
+
+/* Force cursor pointer on the entire diagram container when hovering over nodes */
+.diagram-container .e-diagram .e-node:hover,
+.diagram-container .e-diagram .e-node:hover * {
+  cursor: pointer !important;
+}
+
+/* Override Syncfusion's default cursor styles with maximum specificity */
+.diagram-container .e-diagram .e-node[style*="cursor"] {
+  cursor: pointer !important;
+}
+
+.diagram-container .e-diagram .e-node .e-annotation[style*="cursor"] {
+  cursor: pointer !important;
+}
+
+.diagram-container .e-diagram .e-node .e-diagram-text[style*="cursor"] {
+  cursor: pointer !important;
+}
+
+/* Additional overrides for Syncfusion's internal elements */
+.diagram-container .e-diagram .e-node .e-element {
+  cursor: pointer !important;
+}
+
+.diagram-container .e-diagram .e-node .e-element * {
+  cursor: pointer !important;
+}
+
+/* Global override for any element within a node */
+.diagram-container .e-diagram .e-node *[style*="cursor"] {
+  cursor: pointer !important;
+}
+
+/* Force cursor pointer on all possible drag states */
+.diagram-container .e-diagram .e-node[class*="drag"],
+.diagram-container .e-diagram .e-node[class*="move"],
+.diagram-container .e-diagram .e-node[class*="select"] {
+  cursor: pointer !important;
+}
+
+/* Override any possible cursor styles from Syncfusion */
+.diagram-container .e-diagram .e-node,
+.diagram-container .e-diagram .e-node *,
+.diagram-container .e-diagram .e-node:hover,
+.diagram-container .e-diagram .e-node:hover *,
+.diagram-container .e-diagram .e-node:active,
+.diagram-container .e-diagram .e-node:active *,
+.diagram-container .e-diagram .e-node:focus,
+.diagram-container .e-diagram .e-node:focus * {
+  cursor: pointer !important;
+}
+
+/* Card Details Slideout Panel */
+.card-details-panel {
+  position: fixed;
+  top: 100px; /* More clearance below the main header */
+  right: -400px; /* Initially hidden off-screen */
+  width: 400px;
+  height: calc(100vh - 100px); /* Full height minus header and gap */
+  background: #f8f9fa; /* Match left panel background */
+  border-left: 1px solid #e5e7eb; /* Match left panel border */
+  border-radius: 8px 0 0 8px; /* Rounded left corners */
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth slide animation */
+  z-index: 1000;
+  overflow-y: auto;
+  transform: translateX(0); /* Ensure smooth transform */
+}
+
+.card-details-panel.open {
+  right: 0; /* Slide in when open */
+  animation: slideInFromRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Slide-in animation keyframes */
+@keyframes slideInFromRight {
+  0% {
+    right: -400px;
+    opacity: 0;
+  }
+  100% {
+    right: 0;
+    opacity: 1;
+  }
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb; /* Slightly thicker border for separation */
+  background: #f8f9fa; /* Match left panel background */
+}
+
+.panel-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937; /* Darker text color for better contrast */
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.panel-content {
+  padding: 20px;
+  background: #f8f9fa;
+}
+
+.card-info {
+  margin-bottom: 25px;
+}
+
+.card-title {
+  margin: 0 0 25px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937; /* Match darker text color */
+  line-height: 1.3;
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 18px;
+  align-items: center;
+}
+
+.info-row.full-width {
+  flex-direction: column;
+}
+
+.info-row .label {
+  font-weight: 600;
+  color: #6b7280; /* Softer label color */
+  min-width: 90px;
+  margin-right: 15px;
+  font-size: 15px;
+}
+
+.info-row.full-width .label {
+  margin-bottom: 12px;
+  margin-right: 0;
+}
+
+.info-row .value {
+  color: #1f2937; /* Darker value text */
+  font-size: 15px;
+  flex: 1;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.info-row .value.description {
+  line-height: 1.5;
+  background: white; /* White background for description box */
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb; /* Match left panel border color */
+}
+
+.panel-actions {
+  border-top: 1px solid #e5e7eb; /* Match left panel border color */
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.external-link-button {
+  display: inline-block;
+  background: #2e313a; /* Match the header color */
+  color: white;
+  text-decoration: none;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600; /* Match button weight */
+  transition: background-color 0.2s ease;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.external-link-button:hover {
+  background: #1a1d24; /* Darker hover state */
+  color: white;
+  text-decoration: none;
+}
+
+/* Backdrop overlay when panel is open */
+.card-details-panel.open::before {
+  content: '';
+  position: fixed;
+  top: 100px; /* Match panel top position */
+  left: 0;
+  right: 400px;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: -1;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Fade-in animation for backdrop */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+

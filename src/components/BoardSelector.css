@@ -1,0 +1,63 @@
+.board-selector {
+  margin-bottom: 20px;
+}
+
+.selector-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #374151;
+  font-size: 14px;
+}
+
+.board-dropdown {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: white;
+  color: #374151;
+  transition: border-color 0.2s ease;
+}
+
+.board-dropdown:focus {
+  outline: none;
+  border-color: #527a8e;
+  box-shadow: 0 0 0 3px rgba(82, 122, 142, 0.1);
+}
+
+.loading {
+  padding: 10px 12px;
+  color: #6b7280;
+  font-style: italic;
+  background-color: #f9fafb;
+  border-radius: 6px;
+  border: 2px solid #e5e7eb;
+}
+
+.error {
+  padding: 10px 12px;
+  color: #dc2626;
+  background-color: #fef2f2;
+  border-radius: 6px;
+  border: 2px solid #fecaca;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.retry-button {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retry-button:hover {
+  background-color: #b91c1c;
+}
