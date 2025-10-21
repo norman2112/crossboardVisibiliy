@@ -67,7 +67,7 @@ class AgilePlaceAPI {
       });
       
       // If direct URL failed and we have a baseURL, try falling back to proxy
-      if (this.baseURL && url.startsWith('http')) {
+      if (this.baseURL) {
         console.log('Direct URL failed, trying proxy fallback...');
         try {
           const proxyUrl = endpoint;
