@@ -30,7 +30,8 @@ export default async function handler(req, res) {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'User-Agent': 'CrossBoard-Visibility-Tool/1.0'
       },
       body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
     });
