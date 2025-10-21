@@ -12,16 +12,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { url, token } = req.query;
+    const { url, token, endpoint } = req.query;
     
-    if (!url || !token) {
+    if (!url || !token || !endpoint) {
       return res.status(400).json({ 
-        error: 'Missing required parameters: url and token' 
+        error: 'Missing required parameters: url, token, and endpoint' 
       });
     }
 
-    // Extract the endpoint from the request
-    const endpoint = req.url.replace('/api/proxy?', '');
     const targetUrl = `${url}${endpoint}`;
 
     console.log('Proxying request to:', targetUrl);
@@ -32,13 +30,26 @@ export default async function handler(req, res) {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        ...req.headers
+        'Accept': 'application/json'
       },
       body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
     });
 
+    console.log('AgilePlace response status:', response.status);
+    console.log('AgilePlace response headers:', [...response.headers.entries()]);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('AgilePlace error response:', errorText);
+      return res.status(response.status).json({
+        error: 'AgilePlace API error',
+        status: response.status,
+        details: errorText
+      });
+    }
+
     const data = await response.json();
+    console.log('AgilePlace response data:', data);
     
     res.status(response.status).json(data);
   } catch (error) {

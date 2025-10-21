@@ -27,7 +27,7 @@ class AgilePlaceAPI {
   // Helper method to make API requests
   async makeRequest(endpoint, options = {}) {
     // Use Vercel serverless function as proxy to avoid CORS issues
-    const proxyUrl = `/api/proxy?url=${encodeURIComponent(this.baseURL)}&token=${encodeURIComponent(this.token)}${endpoint}`;
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(this.baseURL)}&token=${encodeURIComponent(this.token)}&endpoint=${encodeURIComponent(endpoint)}`;
     
     const config = {
       method: 'GET',
