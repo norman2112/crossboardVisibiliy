@@ -53,12 +53,26 @@ export default async function handler(req, res) {
       });
     }
 
-    const data = await response.json();
-    console.log('AgilePlace response data:', data);
-    console.log('AgilePlace response type:', typeof data);
-    console.log('AgilePlace response keys:', Object.keys(data || {}));
+    // Try to get the response as text first to see what we're actually getting
+    const responseText = await response.text();
+    console.log('AgilePlace raw response:', responseText);
+    console.log('Response length:', responseText.length);
     
-    res.status(response.status).json(data);
+    try {
+      const data = JSON.parse(responseText);
+      console.log('AgilePlace parsed JSON:', data);
+      console.log('AgilePlace response type:', typeof data);
+      console.log('AgilePlace response keys:', Object.keys(data || {}));
+      
+      res.status(response.status).json(data);
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', parseError);
+      console.error('Raw response was:', responseText);
+      return res.status(500).json({
+        error: 'Invalid JSON response from AgilePlace',
+        details: responseText.substring(0, 200) + '...'
+      });
+    }
   } catch (error) {
     console.error('Proxy error:', error);
     res.status(500).json({ 
