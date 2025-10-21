@@ -14,25 +14,27 @@
   color: #1e293b;
   font-size: 14px;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--font-sans, "Inter", sans-serif);
   letter-spacing: -0.025em;
 }
 
 .select-all-button {
-  background-color: #1e3a8a;
+  background-color: #0056d2;
   color: white;
-  border: none;
-  padding: 6px 12px;
+  border: 1px solid #0056d2;
+  padding: 0.25rem 0.75rem;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  font-family: var(--font-sans, "Inter", sans-serif);
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .select-all-button:hover {
-  background-color: #1e40af;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  background-color: #0042a8;
+  border-color: #0042a8;
 }
 
 .card-list {
@@ -81,7 +83,7 @@
 
 .card-item.selected {
   background-color: #eff6ff;
-  border-left: 4px solid #1e3a8a;
+  border-left: 4px solid #0056d2;
 }
 
 .card-checkbox {
