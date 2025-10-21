@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, memo } from 'react';
 import agilePlaceAPI from '../services/agilePlaceAPI';
 import './BoardSelector.css';
 
-const BoardSelector = ({ onBoardSelect, selectedBoardId }) => {
+const BoardSelector = ({ onBoardSelect, selectedBoardId, credentialsConfigured }) => {
   const [boards, setBoards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,8 +22,13 @@ const BoardSelector = ({ onBoardSelect, selectedBoardId }) => {
   }, []);
 
   useEffect(() => {
-    loadBoards();
-  }, [loadBoards]);
+    if (credentialsConfigured) {
+      loadBoards();
+    } else {
+      setLoading(false);
+      setError(null);
+    }
+  }, [loadBoards, credentialsConfigured]);
 
   const handleBoardChange = (event) => {
     const boardId = event.target.value;
@@ -34,6 +39,15 @@ const BoardSelector = ({ onBoardSelect, selectedBoardId }) => {
       onBoardSelect(null);
     }
   };
+
+  if (!credentialsConfigured) {
+    return (
+      <div className="board-selector">
+        <label className="selector-label">Select Board:</label>
+        <div className="loading">Configure credentials to load boards</div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

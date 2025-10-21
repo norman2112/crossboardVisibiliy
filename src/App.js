@@ -182,6 +182,7 @@ function App() {
           <BoardSelector 
             onBoardSelect={handleBoardSelect}
             selectedBoardId={selectedBoard?.id}
+            credentialsConfigured={credentialsConfigured}
           />
           
           <ParentCardSelector
