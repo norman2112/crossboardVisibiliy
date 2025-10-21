@@ -26,44 +26,25 @@ class AgilePlaceAPI {
 
   // Helper method to make API requests
   async makeRequest(endpoint, options = {}) {
-    // Try proxy first, then fall back to direct URL
-    let url, config;
+    // Use Vercel serverless function as proxy to avoid CORS issues
+    const proxyUrl = `/api/proxy?url=${encodeURIComponent(this.baseURL)}&token=${encodeURIComponent(this.token)}${endpoint}`;
     
-    if (this.baseURL) {
-      // Use direct URL with CORS
-      url = `${this.baseURL}${endpoint}`;
-      config = {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          ...options.headers
-        },
-        mode: 'cors',
-        ...options
-      };
-    } else {
-      // Use proxy (relative URL)
-      url = endpoint;
-      config = {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          ...options.headers
-        },
-        ...options
-      };
-    }
+    const config = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        ...options.headers
+      },
+      ...options
+    };
 
     try {
-      console.log('Making API request to:', url);
-      console.log('Using method:', this.baseURL ? 'direct' : 'proxy');
+      console.log('Making API request to:', proxyUrl);
+      console.log('Using Vercel proxy for CORS handling');
       console.log('Request config:', config);
       
-      const response = await fetch(url, config);
+      const response = await fetch(proxyUrl, config);
       
       console.log('Response status:', response.status);
       console.log('Response headers:', [...response.headers.entries()]);
