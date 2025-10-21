@@ -136,7 +136,7 @@ const TreeView = ({ data = [], orientation = 'TopToBottom', extraLarge = false }
           data={treeData}
           openByDefault={false}
           width="100%"
-          height="100%"
+          height={400}
           indent={24}
           rowHeight={60}
           overscanCount={5}
