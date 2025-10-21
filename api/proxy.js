@@ -20,9 +20,15 @@ export default async function handler(req, res) {
       });
     }
 
-    const targetUrl = `${url}${endpoint}`;
+    // Ensure the URL has the /api prefix for AgilePlace API
+    const baseUrl = url.endsWith('/') ? url.slice(0, -1) : url;
+    const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+    const targetUrl = `${apiUrl}${endpoint}`;
 
     console.log('Proxying request to:', targetUrl);
+    console.log('Original URL:', url);
+    console.log('API URL:', apiUrl);
+    console.log('Endpoint:', endpoint);
 
     // Make the request to AgilePlace
     const response = await fetch(targetUrl, {
