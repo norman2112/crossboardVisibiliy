@@ -65,17 +65,17 @@
 
 .tree-node.l1 {
   background: #f8fafc;
-  border-left: 4px solid #0056d2;
+  border-left: 4px solid var(--blue500);
 }
 
 .tree-node.l2 {
   background: #ffffff;
-  border-left: 4px solid #0056d2;
+  border-left: 4px solid var(--blue500);
 }
 
 .tree-node.l3 {
   background: #ffffff;
-  border-left: 4px solid #0056d2;
+  border-left: 4px solid var(--blue500);
 }
 
 .node-content {

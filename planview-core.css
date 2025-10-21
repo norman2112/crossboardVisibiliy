@@ -1,0 +1,122 @@
+
+:root {
+  --font-sans: "Inter", sans-serif;
+  --gray300: #bdbdbd;
+  --gray500: #9e9e9e;
+  --gray700: #616161;
+  --gray900: #212121;
+  --blue500: #0056d2;
+  --blue600: #0042a8;
+  --red500: #d23c3c;
+  --red600: #b53030;
+  --header-bg: #171C26;
+  --radius: 4px;
+  --transition: 0.2s ease-in-out;
+}
+
+/* === Header === */
+.header {
+  background-color: var(--header-bg);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+}
+
+/* === Background Patterns === */
+.bg-diagonal-stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(189, 189, 189, 0.4) 0,
+    rgba(189, 189, 189, 0.4) 1px,
+    transparent 1px,
+    transparent 9px
+  );
+  background-repeat: repeat;
+  background-size: 9px 9px;
+}
+
+/* === Button Base === */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  border: 1px solid transparent;
+}
+
+/* === Button Variants === */
+.button-primary {
+  background-color: var(--blue500);
+  color: #fff;
+  border-color: var(--blue500);
+}
+.button-primary:hover {
+  background-color: var(--blue600);
+}
+
+.button-danger {
+  background-color: var(--red500);
+  color: #fff;
+  border-color: var(--red500);
+}
+.button-danger:hover {
+  background-color: var(--red600);
+}
+
+.button-empty {
+  background: transparent;
+  border-color: var(--gray500);
+  color: var(--gray900);
+}
+.button-empty:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* === Button Empty Inverse === */
+.button-empty-inverse {
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+.button-empty-inverse:hover {
+  border-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.button-ghost {
+  background: transparent;
+  border: none;
+  color: var(--blue500);
+}
+.button-ghost:hover {
+  background-color: rgba(0, 86, 210, 0.08);
+}
+
+/* === Sizes === */
+.button-sm { padding: 0.25rem 0.75rem; font-size: 0.875rem; }
+.button-lg { padding: 0.75rem 1.25rem; font-size: 1rem; }
+
+/* === Disabled State === */
+.button:disabled,
+.button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Adaptive Behavior === */
+@media (max-width: 768px) {
+  .button {
+    width: 100%;
+  }
+  .toolbar {
+    flex-wrap: wrap;
+  }
+}

@@ -165,17 +165,17 @@
 }
 
 .save-button {
-  background: #0056d2;
+  background: var(--blue500);
   color: white;
-  border: 1px solid #0056d2;
-  font-family: var(--font-sans, "Inter", sans-serif);
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
   font-weight: 500;
   line-height: 1.2;
 }
 
 .save-button:hover:not(:disabled) {
-  background: #0042a8;
-  border-color: #0042a8;
+  background: var(--blue600);
+  border-color: var(--blue600);
 }
 
 .save-button:disabled {
