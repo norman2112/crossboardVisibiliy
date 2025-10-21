@@ -15,7 +15,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [orientation, setOrientation] = useState('LeftToRight');
+  const [orientation, setOrientation] = useState('TopToBottom');
   const [credentialsConfigured, setCredentialsConfigured] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [extraLargeNodes, setExtraLargeNodes] = useState(false);

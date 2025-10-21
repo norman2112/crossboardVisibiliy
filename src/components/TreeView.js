@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Tree } from 'react-arborist';
 import './TreeView.css';
 
-const TreeView = ({ data = [], orientation = 'LeftToRight', extraLarge = false }) => {
+const TreeView = ({ data = [], orientation = 'TopToBottom', extraLarge = false }) => {
   // Transform mind map data to tree format
   const treeData = useMemo(() => {
     if (!data || data.length === 0) return [];

@@ -10,7 +10,7 @@ import { DataManager } from '@syncfusion/ej2-data';
 import { SAMPLE_DATA } from './data/sampleData';
 import './MindMapDiagram.css';
 
-const MindMapDiagram = ({ data = [], orientation = 'LeftToRight', extraLarge = false }) => {
+const MindMapDiagram = ({ data = [], orientation = 'TopToBottom', extraLarge = false }) => {
   const diagramInstance = useRef(null);
   const [selectedCard, setSelectedCard] = useState(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
