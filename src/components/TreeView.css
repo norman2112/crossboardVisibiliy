@@ -70,12 +70,12 @@
 
 .tree-node.l2 {
   background: #ffffff;
-  border-left: 4px solid var(--blue500);
+  border-left: 4px solid #28a745;
 }
 
 .tree-node.l3 {
   background: #ffffff;
-  border-left: 4px solid var(--blue500);
+  border-left: 4px solid #ffc107;
 }
 
 .node-content {
