@@ -20,10 +20,13 @@ export default async function handler(req, res) {
       });
     }
 
-    const targetUrl = `${url}${endpoint}`;
+    // Construct the correct AgilePlace API URL
+    const baseUrl = url.endsWith('/') ? url.slice(0, -1) : url;
+    const targetUrl = `${baseUrl}${endpoint}`;
 
     console.log('Proxying request to:', targetUrl);
     console.log('Original URL:', url);
+    console.log('Base URL:', baseUrl);
     console.log('Endpoint:', endpoint);
     console.log('Token (first 10 chars):', token.substring(0, 10));
     console.log('Authorization header:', `Bearer ${token.substring(0, 10)}...`);
