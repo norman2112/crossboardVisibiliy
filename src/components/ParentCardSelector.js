@@ -78,13 +78,20 @@ const ParentCardSelector = ({ boardId, onParentCardsSelect, selectedParentCardId
     );
   }
 
+  // Determine size class based on number of cards - more generous sizing
+  const getSizeClass = () => {
+    if (parentCards.length <= 5) return 'small';
+    if (parentCards.length <= 12) return 'medium';
+    return 'large';
+  };
+
   return (
     <div className="parent-card-selector">
       <div className="selector-header">
         <label className="selector-label">Select Parent Cards:</label>
       </div>
       
-      <div className="card-list">
+      <div className={`card-list ${getSizeClass()}`}>
         {parentCards.map(card => (
           <div 
             key={card.id} 

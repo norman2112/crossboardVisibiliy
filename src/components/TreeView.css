@@ -1,0 +1,286 @@
+/* TreeView Planview Enterprise Styles */
+.tree-view-container {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tree-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e1e5e9;
+  position: relative;
+  z-index: 1;
+}
+
+.tree-header h3 {
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tree-stats {
+  color: #6c757d;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.tree-wrapper {
+  background: #ffffff;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  box-shadow: none;
+}
+
+.tree-node {
+  background: transparent;
+  border-bottom: 1px solid #f1f3f4;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tree-node:last-child {
+  border-bottom: none;
+}
+
+.tree-node:hover {
+  background: #f8f9fa;
+}
+
+.tree-node.l1 {
+  background: #f8f9fa;
+  border-left: 4px solid #007bff;
+}
+
+.tree-node.l2 {
+  background: #ffffff;
+  border-left: 4px solid #28a745;
+}
+
+.tree-node.l3 {
+  background: #ffffff;
+  border-left: 4px solid #ffc107;
+}
+
+.node-content {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  gap: 12px;
+}
+
+.expand-button {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.expand-button:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  color: #495057;
+}
+
+.expand-button.expanded {
+  transform: rotate(90deg);
+}
+
+.expand-button svg {
+  transition: transform 0.2s ease;
+}
+
+.node-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.node-title {
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.multi-parent-badge {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.node-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.board-name {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.card-type {
+  background: #e9ecef;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-weight: 500;
+}
+
+.node-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.external-link {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.external-link:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  color: #495057;
+  transform: translateY(-1px);
+}
+
+.tree-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: #6c757d;
+  position: relative;
+  z-index: 1;
+  padding: 40px 20px;
+}
+
+.placeholder-icon {
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.placeholder-icon svg {
+  color: #adb5bd;
+}
+
+.tree-placeholder h3 {
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tree-placeholder p {
+  color: #6c757d;
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Custom scrollbar for enterprise styling */
+.tree-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tree-wrapper::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.tree-wrapper::-webkit-scrollbar-thumb {
+  background: #dee2e6;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.tree-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #adb5bd;
+}
+
+/* Animation for smooth interactions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tree-node {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .tree-view-container {
+    padding: 16px;
+  }
+  
+  .node-content {
+    padding: 10px 12px;
+  }
+  
+  .node-title {
+    font-size: 13px;
+  }
+  
+  .node-meta {
+    font-size: 11px;
+  }
+}

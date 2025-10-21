@@ -154,17 +154,86 @@ class AgilePlaceAPI {
     }
   }
 
-  // Get parent cards for a board (cards with no parentCards)
+  // Helper method to batch promises to avoid overwhelming the API
+  async batchPromises(items, batchSize, promiseFunc) {
+    const results = [];
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      const batchResults = await Promise.all(
+        batch.map(item => promiseFunc(item))
+      );
+      results.push(...batchResults);
+      console.log(`Completed batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(items.length / batchSize)}`);
+    }
+    return results;
+  }
+
+  // Get parent cards for a board (cards that have children on same or other boards) - OPTIMIZED with batching
   async getParentCards(boardId) {
     try {
       console.log(`Getting parent cards for board ${boardId}`);
       const allCards = await this.getCards(boardId);
-      console.log(`Retrieved ${allCards.length} total cards for board ${boardId}:`, allCards);
-      const parentCards = allCards.filter(card => !card.parentCards || card.parentCards.length === 0);
-      console.log(`Found ${parentCards.length} parent cards for board ${boardId}:`, parentCards);
-      return parentCards;
+      console.log(`Retrieved ${allCards.length} total cards for board ${boardId}`);
+      
+      // Build a reverse lookup map: cardId -> children on same board
+      const sameBoardChildrenMap = new Map();
+      allCards.forEach(card => {
+        if (card.parentCards && card.parentCards.length > 0) {
+          card.parentCards.forEach(parent => {
+            const parentId = parent.id.toString();
+            if (!sameBoardChildrenMap.has(parentId)) {
+              sameBoardChildrenMap.set(parentId, []);
+            }
+            sameBoardChildrenMap.get(parentId).push(card);
+          });
+        }
+      });
+      
+      // Check for connected children in controlled batches to avoid overwhelming API
+      const BATCH_SIZE = 10; // Process 10 cards at a time
+      console.log(`Checking for connected children across ${allCards.length} cards in batches of ${BATCH_SIZE}...`);
+      
+      const connectedChildrenResults = await this.batchPromises(
+        allCards,
+        BATCH_SIZE,
+        async (card) => {
+          try {
+            const children = await this.getConnectedChildCards(card.id);
+            return { cardId: card.id, children };
+          } catch (err) {
+            console.warn(`Failed to get connected children for card ${card.id}:`, err.message);
+            return { cardId: card.id, children: [] };
+          }
+        }
+      );
+      
+      // Build a map of cards with connected children
+      const connectedChildrenMap = new Map();
+      connectedChildrenResults.forEach(result => {
+        if (result.children.length > 0) {
+          connectedChildrenMap.set(result.cardId.toString(), result.children);
+        }
+      });
+      
+      // Filter cards that have children (either same-board or connected)
+      const cardsWithChildren = allCards.filter(card => {
+        const cardId = card.id.toString();
+        const hasSameBoardChildren = sameBoardChildrenMap.has(cardId);
+        const hasConnectedChildren = connectedChildrenMap.has(cardId);
+        
+        if (hasSameBoardChildren || hasConnectedChildren) {
+          const sameBoardCount = hasSameBoardChildren ? sameBoardChildrenMap.get(cardId).length : 0;
+          const connectedCount = hasConnectedChildren ? connectedChildrenMap.get(cardId).length : 0;
+          console.log(`Card ${card.title} (${cardId}) has ${connectedCount} connected + ${sameBoardCount} same-board children`);
+          return true;
+        }
+        return false;
+      });
+      
+      console.log(`Found ${cardsWithChildren.length} parent cards with children for board ${boardId}`);
+      return cardsWithChildren;
     } catch (error) {
-      console.log(`No parent cards found for board ${boardId}:`, error.message);
+      console.log(`Error finding parent cards for board ${boardId}:`, error.message);
       return [];
     }
   }
@@ -420,23 +489,26 @@ class AgilePlaceAPI {
         });
       });
 
-      // Add child cards (L2 - Second Level)
-      (childCards || []).forEach(child => {
-        // For connected cards, we need to find the parent ID differently
+      // Add child cards (L2 - Second Level) - supports many-to-many relationships
+      (childCards || []).forEach((child, index) => {
+        // For many-to-many relationships, use the tracked parent ID
         let parentId = '';
-        if (child.parentCards && child.parentCards.length > 0) {
-          // Regular child card with parentCards array
-          parentId = child.parentCards[0].id.toString();
-        } else if (child._parentId) {
-          // Connected child card with custom parent ID
+        if (child._parentId) {
+          // Parent ID was explicitly set for this instance (handles many-to-many)
           parentId = child._parentId.toString();
+        } else if (child.parentCards && child.parentCards.length > 0) {
+          // Regular child card with parentCards array (fallback)
+          parentId = child.parentCards[0].id.toString();
         }
+        
+        // Generate unique ID for duplicated children (many-to-many relationships)
+        const nodeId = child._isMultiParent ? `${child.id}_${parentId}` : child.id.toString();
         
         const cardType = getCardType(child);
         const cardColor = getCardColor(child);
         const textColor = isLightColor(cardColor) ? '#000000' : '#FFFFFF'; // Black for light backgrounds, white for dark
         data.push({
-          id: child.id.toString(),
+          id: nodeId,
           label: child.title,
           parentId: parentId,
           type: 'l2', // Generic level 2
@@ -444,32 +516,36 @@ class AgilePlaceAPI {
           cardType: cardType, // Store the actual CardType title for reference
           cardColor: cardColor, // Store the actual card color from AgilePlace
           textColor: textColor, // Store the appropriate text color
-          cardId: child.id.toString(),
+          cardId: child.id.toString(), // Original card ID for linking
           boardName: getBoardName(child),
           addInfo: {
             cardUrl: `https://scdemo320.leankit.com/card/${child.id}`
           },
-          originalData: child
+          originalData: child,
+          isMultiParent: child._isMultiParent || false
         });
       });
 
-      // Add grandchild cards (L3 - Third Level)
-      (grandchildCards || []).forEach(grandchild => {
-        // For connected cards, we need to find the parent ID differently
+      // Add grandchild cards (L3 - Third Level) - supports many-to-many relationships
+      (grandchildCards || []).forEach((grandchild, index) => {
+        // For many-to-many relationships, use the tracked parent ID
         let parentId = '';
-        if (grandchild.parentCards && grandchild.parentCards.length > 0) {
-          // Regular grandchild card with parentCards array
-          parentId = grandchild.parentCards[0].id.toString();
-        } else if (grandchild._parentId) {
-          // Connected grandchild card with custom parent ID
+        if (grandchild._parentId) {
+          // Parent ID was explicitly set for this instance (handles many-to-many)
           parentId = grandchild._parentId.toString();
+        } else if (grandchild.parentCards && grandchild.parentCards.length > 0) {
+          // Regular grandchild card with parentCards array (fallback)
+          parentId = grandchild.parentCards[0].id.toString();
         }
+        
+        // Generate unique ID for duplicated grandchildren (many-to-many relationships)
+        const nodeId = grandchild._isMultiParent ? `${grandchild.id}_${parentId}` : grandchild.id.toString();
         
         const cardType = getCardType(grandchild);
         const cardColor = getCardColor(grandchild);
         const textColor = isLightColor(cardColor) ? '#000000' : '#FFFFFF'; // Black for light backgrounds, white for dark
         data.push({
-          id: grandchild.id.toString(),
+          id: nodeId,
           label: grandchild.title,
           parentId: parentId,
           type: 'l3', // Generic level 3
@@ -477,12 +553,13 @@ class AgilePlaceAPI {
           cardType: cardType, // Store the actual CardType title for reference
           cardColor: cardColor, // Store the actual card color from AgilePlace
           textColor: textColor, // Store the appropriate text color
-          cardId: grandchild.id.toString(),
+          cardId: grandchild.id.toString(), // Original card ID for linking
           boardName: getBoardName(grandchild),
           addInfo: {
             cardUrl: `https://scdemo320.leankit.com/card/${grandchild.id}`
           },
-          originalData: grandchild
+          originalData: grandchild,
+          isMultiParent: grandchild._isMultiParent || false
         });
       });
 
@@ -691,44 +768,82 @@ class AgilePlaceAPI {
       const connectedBoardsMap = await this.getMultipleBoardDetails(connectedBoardIds);
       connectedBoardsMap.forEach((details, id) => allData.boards.set(id, details));
 
-      // Step 6: Process regular children and connected children
+      // Step 6: Process regular children and connected children with many-to-many support
       console.log('Step 6: Processing children...');
       console.log('allData.parents:', allData.parents);
       console.log('allData.parents type:', typeof allData.parents, 'isArray:', Array.isArray(allData.parents));
       console.log('allData.parents.length:', allData.parents ? allData.parents.length : 'undefined');
       
+      // Track unique children and their parent relationships
+      const childParentMap = new Map(); // childId -> Set of parentIds
+      const uniqueChildren = new Map(); // childId -> card object
+      
       for (const parent of (allData.parents || [])) {
         console.log(`Processing parent: ${parent.title} (ID: ${parent.id})`);
         
         // Get regular children from main board
-        console.log('allMainBoardCards:', allMainBoardCards);
-        console.log('allMainBoardCards type:', typeof allMainBoardCards, 'isArray:', Array.isArray(allMainBoardCards));
-        console.log('allMainBoardCards.length:', allMainBoardCards ? allMainBoardCards.length : 'undefined');
-        
         const regularChildren = (allMainBoardCards || []).filter(card => 
           card.parentCards && card.parentCards.some(parentCard => 
             parentCard.id === parent.id || parentCard.id.toString() === parent.id.toString()
           )
         );
         console.log(`Found ${regularChildren.length} regular children for parent ${parent.title}`);
-        allData.children.push(...regularChildren);
+        
+        // Track many-to-many relationships
+        regularChildren.forEach(child => {
+          const childId = child.id.toString();
+          if (!childParentMap.has(childId)) {
+            childParentMap.set(childId, new Set());
+            uniqueChildren.set(childId, child);
+          }
+          childParentMap.get(childId).add(parent.id.toString());
+        });
 
         // Get connected children for this parent
         const connectedChildren = parentChildMap.get(parent.id) || [];
         console.log(`Found ${connectedChildren.length} connected children for parent ${parent.title}`);
-        allData.children.push(...connectedChildren);
+        
+        connectedChildren.forEach(child => {
+          const childId = child.id.toString();
+          if (!childParentMap.has(childId)) {
+            childParentMap.set(childId, new Set());
+            uniqueChildren.set(childId, child);
+          }
+          childParentMap.get(childId).add(parent.id.toString());
+        });
       }
+      
+      // For many-to-many relationships, duplicate children for each parent
+      childParentMap.forEach((parentIds, childId) => {
+        const child = uniqueChildren.get(childId);
+        if (parentIds.size > 1) {
+          // Child has multiple parents - create a copy for each parent
+          console.log(`Child ${child.title} (${childId}) has ${parentIds.size} parents - creating duplicates for many-to-many relationship`);
+          parentIds.forEach(parentId => {
+            const childCopy = { ...child, _parentId: parentId, _isMultiParent: true };
+            allData.children.push(childCopy);
+          });
+        } else {
+          // Child has single parent - use as-is
+          const parentId = Array.from(parentIds)[0];
+          child._parentId = parentId;
+          allData.children.push(child);
+        }
+      });
+      
+      console.log(`Total children (including duplicates for many-to-many): ${allData.children.length}`);
+      console.log(`Unique children: ${uniqueChildren.size}`);
 
-      // Step 7: Get grandchildren efficiently
+      // Step 7: Get grandchildren efficiently with many-to-many support
       console.log('Step 7: Processing grandchildren...');
       console.log('allData.children:', allData.children);
       console.log('allData.children type:', typeof allData.children, 'isArray:', Array.isArray(allData.children));
       console.log('allData.children.length:', allData.children ? allData.children.length : 'undefined');
       
-      const childIds = (allData.children || []).map(child => child.id);
-      console.log('childIds:', childIds);
-      console.log('childIds type:', typeof childIds, 'isArray:', Array.isArray(childIds));
-      console.log('childIds.length:', childIds ? childIds.length : 'undefined');
+      // Get unique child IDs for API calls (avoid duplicates from many-to-many)
+      const uniqueChildIds = [...new Set((allData.children || []).map(child => child.id))];
+      console.log('uniqueChildIds:', uniqueChildIds);
+      console.log('uniqueChildIds.length:', uniqueChildIds ? uniqueChildIds.length : 'undefined');
       
       const childBoardIds = [...new Set((allData.children || []).map(child => child.boardId))];
       console.log('childBoardIds:', childBoardIds);
@@ -743,34 +858,78 @@ class AgilePlaceAPI {
         boardCardsMap.set(boardId, allBoardCardsArrays[index]);
       });
 
-      // Get connected grandchildren for all children in parallel
-      const { allConnectedCards: allConnectedGrandchildren } = await this.getMultipleConnectedChildren(childIds);
+      // Get connected grandchildren for all unique children in parallel
+      const { allConnectedCards: allConnectedGrandchildren } = await this.getMultipleConnectedChildren(uniqueChildIds);
       console.log(`Found ${(allConnectedGrandchildren || []).length} total connected grandchildren`);
 
-      // Process grandchildren
+      // Track unique grandchildren and their parent relationships
+      const grandchildParentMap = new Map(); // grandchildId -> Set of parentIds (child IDs)
+      const uniqueGrandchildren = new Map(); // grandchildId -> card object
+
+      // Process grandchildren for each child instance (including duplicates)
       console.log('About to process grandchildren for children:', allData.children);
       for (const child of (allData.children || [])) {
         console.log(`Processing child: ${child.title} (ID: ${child.id})`);
         
+        // Generate unique ID for this child instance (handles many-to-many children)
+        const childInstanceId = child._isMultiParent ? `${child.id}_${child._parentId}` : child.id.toString();
+        
         // Get regular grandchildren from the same board as the child
         const boardCards = boardCardsMap.get(child.boardId) || [];
-        console.log(`Board cards for child ${child.title}:`, boardCards);
-        console.log(`Board cards type for child ${child.title}:`, typeof boardCards, 'isArray:', Array.isArray(boardCards));
-        console.log(`Board cards length for child ${child.title}:`, boardCards ? boardCards.length : 'undefined');
-        
         const regularGrandchildren = (boardCards || []).filter(card => 
           card.parentCards && card.parentCards.some(parentCard => 
             parentCard.id === child.id || parentCard.id.toString() === child.id.toString()
           )
         );
         console.log(`Found ${regularGrandchildren.length} regular grandchildren for child ${child.title}`);
-        allData.grandchildren.push(...regularGrandchildren);
+        
+        // Track many-to-many relationships for grandchildren
+        regularGrandchildren.forEach(grandchild => {
+          const grandchildId = grandchild.id.toString();
+          if (!grandchildParentMap.has(grandchildId)) {
+            grandchildParentMap.set(grandchildId, new Set());
+            uniqueGrandchildren.set(grandchildId, grandchild);
+          }
+          grandchildParentMap.get(grandchildId).add(childInstanceId);
+        });
       }
-
-      // Add connected grandchildren
+      
+      // Add connected grandchildren to the map
       if (allConnectedGrandchildren && Array.isArray(allConnectedGrandchildren)) {
-        allData.grandchildren.push(...allConnectedGrandchildren);
+        allConnectedGrandchildren.forEach(grandchild => {
+          const grandchildId = grandchild.id.toString();
+          const childInstanceId = grandchild._parentId ? 
+            (grandchild._isMultiParent ? `${grandchild._parentId}_parent` : grandchild._parentId.toString()) : 
+            grandchild._parentId;
+          
+          if (!grandchildParentMap.has(grandchildId)) {
+            grandchildParentMap.set(grandchildId, new Set());
+            uniqueGrandchildren.set(grandchildId, grandchild);
+          }
+          if (childInstanceId) {
+            grandchildParentMap.get(grandchildId).add(childInstanceId);
+          }
+        });
       }
+      
+      // For many-to-many relationships, duplicate grandchildren for each child parent
+      grandchildParentMap.forEach((parentIds, grandchildId) => {
+        const grandchild = uniqueGrandchildren.get(grandchildId);
+        if (parentIds.size > 1) {
+          console.log(`Grandchild ${grandchild.title} (${grandchildId}) has ${parentIds.size} parents - creating duplicates`);
+          parentIds.forEach(parentId => {
+            const grandchildCopy = { ...grandchild, _parentId: parentId, _isMultiParent: true };
+            allData.grandchildren.push(grandchildCopy);
+          });
+        } else {
+          const parentId = Array.from(parentIds)[0];
+          grandchild._parentId = parentId;
+          allData.grandchildren.push(grandchild);
+        }
+      });
+      
+      console.log(`Total grandchildren (including duplicates for many-to-many): ${allData.grandchildren.length}`);
+      console.log(`Unique grandchildren: ${uniqueGrandchildren.size}`);
 
       // Step 8: Get board details for any new boards from grandchildren
       const grandchildBoardIds = [...new Set((allConnectedGrandchildren || []).map(card => card.boardId).filter(id => id && !allData.boards.has(id)))];

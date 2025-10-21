@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MindMapDiagram from './MindMapDiagram';
+import TreeView from './components/TreeView';
 import BoardSelector from './components/BoardSelector';
 import ParentCardSelector from './components/ParentCardSelector';
 import Settings from './components/Settings';
@@ -18,6 +19,7 @@ function App() {
   const [credentialsConfigured, setCredentialsConfigured] = useState(false);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   const [extraLargeNodes, setExtraLargeNodes] = useState(false);
+  const [currentView, setCurrentView] = useState('mindmap'); // 'mindmap' or 'tree'
 
   // Check if credentials are configured
   const hasCredentials = () => {
@@ -44,40 +46,83 @@ function App() {
     setError(null);
   };
 
-         const handleGenerateMindMap = async () => {
-           if (!selectedBoard || selectedParentCardIds.length === 0) {
-             setError('Please select a board and at least one parent card.');
-             return;
-           }
+  const handleGenerateMindMap = async () => {
+    if (!selectedBoard || selectedParentCardIds.length === 0) {
+      setError('Please select a board and at least one parent card.');
+      return;
+    }
 
-           try {
-             setLoading(true);
-             setError(null);
-             console.log('Starting mind map generation...');
-             const data = await agilePlaceAPI.getCardHierarchy(selectedBoard.id, selectedParentCardIds);
-             console.log('Mind map generation successful:', data);
-             setMindMapData(data);
-           } catch (err) {
-             console.error('Error generating mind map:', err);
-             
-             // Provide more specific error messages
-             let errorMessage = 'Failed to load card hierarchy. Please try again.';
-             
-             if (err.message.includes('No parent cards found')) {
-               errorMessage = 'Selected parent cards were not found. Please refresh and try again.';
-             } else if (err.message.includes('Invalid parameters')) {
-               errorMessage = 'Invalid selection. Please select a board and parent cards.';
-             } else if (err.message.includes('API request failed')) {
-               errorMessage = 'Unable to connect to AgilePlace. Please check your settings.';
-             } else if (err.message) {
-               errorMessage = err.message;
-             }
-             
-             setError(errorMessage);
-           } finally {
-             setLoading(false);
-           }
-         };
+    try {
+      setLoading(true);
+      setError(null);
+      setCurrentView('mindmap');
+      console.log('Starting mind map generation...');
+      const data = await agilePlaceAPI.getCardHierarchy(selectedBoard.id, selectedParentCardIds);
+      console.log('Mind map generation successful:', data);
+      setMindMapData(data);
+    } catch (err) {
+      console.error('Error generating mind map:', err);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to load card hierarchy. Please try again.';
+      
+      if (err.message.includes('No parent cards found')) {
+        errorMessage = 'Selected parent cards were not found. Please refresh and try again.';
+      } else if (err.message.includes('Invalid parameters')) {
+        errorMessage = 'Invalid selection. Please select a board and parent cards.';
+      } else if (err.message.includes('API request failed')) {
+        errorMessage = 'Unable to connect to AgilePlace. Please check your settings.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateTreeView = async () => {
+    if (!selectedBoard || selectedParentCardIds.length === 0) {
+      setError('Please select a board and at least one parent card.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setCurrentView('tree');
+      console.log('Starting tree view generation...');
+      const data = await agilePlaceAPI.getCardHierarchy(selectedBoard.id, selectedParentCardIds);
+      console.log('Tree view generation successful:', data);
+      setMindMapData(data);
+    } catch (err) {
+      console.error('Error generating tree view:', err);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to load card hierarchy. Please try again.';
+      
+      if (err.message.includes('No parent cards found')) {
+        errorMessage = 'Selected parent cards were not found. Please refresh and try again.';
+      } else if (err.message.includes('Invalid parameters')) {
+        errorMessage = 'Invalid selection. Please select a board and parent cards.';
+      } else if (err.message.includes('API request failed')) {
+        errorMessage = 'Unable to connect to AgilePlace. Please check your settings.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearMap = () => {
+    setMindMapData([]);
+    setError(null);
+    console.log('Mind map cleared');
+  };
 
   const handleSettingsSave = (settings) => {
     // Update the API configuration with new settings
@@ -229,7 +274,23 @@ function App() {
                      disabled={!selectedBoard || selectedParentCardIds.length === 0 || loading}
                      className="generate-button"
                    >
-                     {loading ? 'Loading...' : 'Generate Map'}
+                     {loading && currentView === 'mindmap' ? 'Loading...' : 'Generate Map'}
+                   </button>
+                   
+                   <button
+                     onClick={handleGenerateTreeView}
+                     disabled={!selectedBoard || selectedParentCardIds.length === 0 || loading}
+                     className="generate-tree-button"
+                   >
+                     {loading && currentView === 'tree' ? 'Loading...' : 'Generate Tree View'}
+                   </button>
+                   
+                   <button
+                     onClick={handleClearMap}
+                     disabled={mindMapData.length === 0}
+                     className="clear-button"
+                   >
+                     Clear Map
                    </button>
             
             {error && (
@@ -242,10 +303,14 @@ function App() {
         
         <div className="diagram-panel">
                  {mindMapData.length > 0 ? (
-                   <MindMapDiagram data={mindMapData} orientation={orientation} extraLarge={extraLargeNodes} />
+                   currentView === 'mindmap' ? (
+                     <MindMapDiagram data={mindMapData} orientation={orientation} extraLarge={extraLargeNodes} />
+                   ) : (
+                     <TreeView data={mindMapData} orientation={orientation} extraLarge={extraLargeNodes} />
+                   )
                  ) : (
                    <div className="placeholder">
-                     <p>Select a board and parent cards, then click "Generate Map" to view the hierarchy.</p>
+                     <p>Select a board and parent cards, then click "Generate Map" or "Generate Tree View" to view the hierarchy.</p>
                    </div>
                  )}
         </div>
