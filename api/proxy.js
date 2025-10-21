@@ -1,4 +1,5 @@
 // Vercel serverless function to proxy AgilePlace API requests
+// Version: 2.0 - Fixed URL construction
 export default async function handler(req, res) {
   // Enable CORS for all requests
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -9,6 +10,17 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
+  }
+
+  // Test endpoint to verify proxy is working
+  if (req.query.test === 'true') {
+    return res.status(200).json({
+      message: 'Proxy is working!',
+      version: '2.0',
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      url: req.url
+    });
   }
 
   try {
