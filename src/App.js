@@ -5,7 +5,6 @@ import BoardSelector from './components/BoardSelector';
 import ParentCardSelector from './components/ParentCardSelector';
 import Settings from './components/Settings';
 import agilePlaceAPI from './services/agilePlaceAPI';
-import logo from './assets/logo.png';
 import './App.css';
 
 function App() {
@@ -144,13 +143,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="header-left">
-          <div className="planview-logo">
-            <img 
-              src={logo} 
-              alt="Planview Logo" 
-            />
-          </div>
-                <h1>Planview Cross-Board Connections</h1>
+          <h1>Planview Cross-Board Connections</h1>
         </div>
         <button 
           className="settings-header-button" 

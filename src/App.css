@@ -37,17 +37,6 @@
   gap: 16px;
 }
 
-.planview-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.planview-logo img {
-  height: 32px;
-  width: auto;
-  object-fit: contain;
-}
 
 .App-header h1 {
   font-size: 20px;
