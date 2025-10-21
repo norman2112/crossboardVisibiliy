@@ -66,38 +66,6 @@ class AgilePlaceAPI {
         stack: error.stack
       });
       
-      // If direct URL failed and we have a baseURL, try falling back to proxy
-      if (this.baseURL) {
-        console.log('Direct URL failed, trying proxy fallback...');
-        try {
-          const proxyUrl = endpoint;
-          const proxyConfig = {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.token}`,
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              ...options.headers
-            },
-            ...options
-          };
-          
-          console.log('Trying proxy request to:', proxyUrl);
-          const proxyResponse = await fetch(proxyUrl, proxyConfig);
-          
-          if (!proxyResponse.ok) {
-            throw new Error(`Proxy request also failed: ${proxyResponse.status}`);
-          }
-          
-          const proxyData = await proxyResponse.json();
-          console.log('Proxy response successful:', proxyData);
-          return proxyData;
-        } catch (proxyError) {
-          console.error('Proxy fallback also failed:', proxyError);
-          throw error; // Throw original error
-        }
-      }
-      
       throw error;
     }
   }
