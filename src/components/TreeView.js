@@ -34,11 +34,14 @@ const TreeView = ({ data = [], orientation = 'LeftToRight', extraLarge = false }
         const parent = nodeMap.get(item.parentId);
         if (!parent.children) parent.children = [];
         parent.children.push(node);
+        console.log(`Added child "${node.name}" (${node.level}) to parent "${parent.name}" (${parent.level})`);
       } else {
         rootNodes.push(node);
+        console.log(`Added root node "${node.name}" (${node.level})`);
       }
     });
     
+    console.log('Tree data structure:', rootNodes);
     return rootNodes;
   }, [data]);
 
