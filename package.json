@@ -1,7 +1,10 @@
 {
-  "name": "epic-feature-story-mindmap",
-  "version": "0.1.0",
+  "name": "crossboard-visibility-tool",
+  "version": "1.0.0",
+  "description": "Cross-board hierarchy visualization tool for Planview AgilePlace",
+  "author": "Norman Garrett",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@syncfusion/ej2-base": "^31.1.22",
     "@syncfusion/ej2-react-diagrams": "^31.1.22",
@@ -14,7 +17,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "vercel-build": "react-scripts build"
   },
   "proxy": "https://scdemo320.leankit.com",
   "eslintConfig": {
