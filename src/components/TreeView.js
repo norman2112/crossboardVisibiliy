@@ -3,6 +3,26 @@ import { Tree } from 'react-arborist';
 import './TreeView.css';
 
 const TreeView = ({ data = [], orientation = 'TopToBottom', extraLarge = false }) => {
+  // Calculate dynamic height based on viewport
+  const calculateTreeHeight = () => {
+    const viewportHeight = window.innerHeight;
+    const headerHeight = 60; // Approximate header height
+    const controlsHeight = 200; // Approximate controls panel height
+    const padding = 40; // Additional padding
+    return Math.max(400, viewportHeight - headerHeight - controlsHeight - padding);
+  };
+
+  const [treeHeight, setTreeHeight] = React.useState(400);
+
+  React.useEffect(() => {
+    const updateHeight = () => {
+      setTreeHeight(calculateTreeHeight());
+    };
+    
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
   // Transform mind map data to tree format
   const treeData = useMemo(() => {
     if (!data || data.length === 0) return [];
@@ -136,7 +156,7 @@ const TreeView = ({ data = [], orientation = 'TopToBottom', extraLarge = false }
           data={treeData}
           openByDefault={false}
           width="100%"
-          height={400}
+          height={treeHeight}
           indent={24}
           rowHeight={60}
           overscanCount={5}
