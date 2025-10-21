@@ -50,6 +50,8 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     console.log('AgilePlace response data:', data);
+    console.log('AgilePlace response type:', typeof data);
+    console.log('AgilePlace response keys:', Object.keys(data || {}));
     
     res.status(response.status).json(data);
   } catch (error) {

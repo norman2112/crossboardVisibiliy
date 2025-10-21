@@ -57,6 +57,13 @@ class AgilePlaceAPI {
       
       const data = await response.json();
       console.log('API Response data:', data);
+      
+      // Check if the response contains an error from the proxy
+      if (data.error) {
+        console.error('Proxy returned error:', data);
+        throw new Error(`AgilePlace API error: ${data.error} - ${data.details || ''}`);
+      }
+      
       return data;
     } catch (error) {
       console.error('API request error:', error);
