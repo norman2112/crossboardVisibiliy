@@ -20,15 +20,13 @@ export default async function handler(req, res) {
       });
     }
 
-    // Ensure the URL has the /api prefix for AgilePlace API
-    const baseUrl = url.endsWith('/') ? url.slice(0, -1) : url;
-    const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
-    const targetUrl = `${apiUrl}${endpoint}`;
+    const targetUrl = `${url}${endpoint}`;
 
     console.log('Proxying request to:', targetUrl);
     console.log('Original URL:', url);
-    console.log('API URL:', apiUrl);
     console.log('Endpoint:', endpoint);
+    console.log('Token (first 10 chars):', token.substring(0, 10));
+    console.log('Authorization header:', `Bearer ${token.substring(0, 10)}...`);
 
     // Make the request to AgilePlace
     const response = await fetch(targetUrl, {
